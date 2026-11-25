@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:gadgets_store_admin/src/features/home/provider/home_provider.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,6 +13,26 @@ class HomeScreen extends StatelessWidget {
       child: Builder(
         builder: (context) {
           return Scaffold(
+            floatingActionButton: ValueListenableBuilder(
+              valueListenable: isLoading,
+              builder: (context, value, child) {
+                if (value == true) {
+                  return CircularProgressIndicator();
+                } else {
+                  return FloatingActionButton(
+                    onPressed: () {
+                      context.read<HomeProvider>().qoshish(
+                        "test",
+                        "test",
+                        "test",
+                        'test',
+                      );
+                    },
+                    child: Icon(Icons.add),
+                  );
+                }
+              },
+            ),
             body: Row(
               children: [
                 Visibility(
@@ -33,23 +53,50 @@ class HomeScreen extends StatelessWidget {
                   child: Builder(
                     builder: (context) {
                       final status = context.watch<HomeProvider>().status;
-
                       if (status == HomeStatus.loading) {
                         return Center(child: CircularProgressIndicator());
                       } else if (status == HomeStatus.success) {
                         final data = context.watch<HomeProvider>().data;
-                        return ListView.separated(
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: ListTile(
-                                title: Text(data[index]['model']),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 20),
-                          itemCount: data.length,
-                        );
+                        if (data.isEmpty) {
+                          return Center(child: Text('Hech bola yoq'));
+                        } else {
+                          return ListView.separated(
+                            itemBuilder: (context, index) {
+                              return Card(
+                                child: ListTile(
+                                  trailing: ValueListenableBuilder(
+                                    valueListenable: isDeleting,
+                                    builder: (context, value, child) {
+                                      return IconButton(
+                                        onPressed: value
+                                            ? null
+                                            : () {
+                                                context
+                                                    .read<HomeProvider>()
+                                                    .ochirish(
+                                                      data[index]['id'],
+                                                    );
+                                              },
+                                        icon:
+                                            value &&
+                                                data[index]['id'] ==
+                                                    context
+                                                        .watch<HomeProvider>()
+                                                        .deletingID
+                                            ? CircularProgressIndicator()
+                                            : Icon(Icons.delete),
+                                      );
+                                    },
+                                  ),
+                                  title: Text(data[index]['model']),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                                SizedBox(height: 20),
+                            itemCount: data.length,
+                          );
+                        }
                       } else {
                         return Center(
                           child: Text('Xatolik bor qayta urunib koring'),

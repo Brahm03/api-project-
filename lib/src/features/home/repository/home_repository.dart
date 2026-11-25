@@ -29,4 +29,52 @@ class HomeRepository {
       throw Exception('Something went wrong !');
     }
   }
+
+  static Future<void> addLaptop(Map data) async {
+    print('Data $data');
+    try {
+      final response = await http.post(
+        Uri.parse("https://6b04308e9e7cafb37dc008f8.mockapi.io/laptops/"),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: json.encode(data),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // * Success
+        print('Malumot qoshildi');
+      } else {
+        throw HttpException(response.body);
+      }
+    } on TimeoutException catch (_) {
+      throw TimeoutException(
+        "Slow internet connection try again with differnt network",
+      );
+    } on SocketException catch (_) {
+      throw SocketException(
+        "Check your connection and try again dont use ucell",
+      );
+    } catch (e) {
+      throw Exception('Something went wrong !');
+    }
+  }
+
+  static Future<void> deleteProduct(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse("https://6b04308e9e7cafb37dc008f8.mockapi.io/laptops/$id"),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // * Success
+      } else {
+        throw HttpException("Something went wrong !");
+      }
+    } on SocketException catch (_) {
+      throw SocketException("Slow connection try again !");
+    } on TimeoutException catch (_) {
+      throw TimeoutException("Slow network try again !");
+    } catch (e) {
+      throw Exception('Something went wrong !');
+    }
+  }
 }

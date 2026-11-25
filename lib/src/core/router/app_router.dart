@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:gadgets_store_admin/src/features/home/screens/home_screen.dart';
 
 class AppPages {
